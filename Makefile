@@ -5,7 +5,12 @@ export GOARCH:=amd64
 LOCAL_OS:=$(shell uname | tr A-Z a-z)
 GOFILES:=$(shell find . -name '*.go' | grep -v -E '(./vendor)')
 GOPATH_BIN:=$(shell echo ${GOPATH} | awk 'BEGIN { FS = ":" }; { print $1 }')/bin
-LDFLAGS=-X github.com/odacremolbap/kwtest/pkg/version.Version=$(shell $(CURDIR)/build/git-version.sh)
+GO_PACKAGE := github.com/odacremolbap/kwtest
+LDFLAG_VER := -X $(GO_PACKAGE)/model.version=$(VERSION)
+LDFLAG_DATE := -X $(GO_PACKAGE)/model.date=$(DATE)
+LDFLAG_GIT := -X $(GO_PACKAGE)/model.gitVersion=$(GIT_VERSION)
+LDFLAG_STATIC :=-extldflags "-static"
+LDFLAGS=$(LDFLAG_VER) $(LDFLAG_DATE) $(LDFLAG_GIT) $(LDFLAG_STATIC)
 
 all: \
 	_output/bin/linux/kwtest \
@@ -26,7 +31,7 @@ install: _output/bin/$(LOCAL_OS)/kwtest
 
 _output/bin/%: $(GOFILES)
 	mkdir -p $(dir $@)
-	GOOS=$(word 1, $(subst /, ,$*)) go build $(GOFLAGS) -ldflags "$(LDFLAGS)" -o $@ github.com/odacremolbap/kwtest/cmd/
+	GOOS=$(word 1, $(subst /, ,$*)) go build $(GOFLAGS) -ldflags '$(LDFLAGS)' -o $@ github.com/odacremolbap/kwtest/cmd/
 
 
 clean:
