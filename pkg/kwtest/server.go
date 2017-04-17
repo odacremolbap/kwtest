@@ -39,4 +39,6 @@ func (s *Server) Run() error {
 
 func (s *Server) createRoutes() {
 	http.HandleFunc("/", handlers.RootHandler)
+	http.HandleFunc("/spoil", handlers.SpoilHandler)
+	http.HandleFunc("/heal", handlers.HealHandler)
 }
