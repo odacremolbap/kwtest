@@ -28,7 +28,6 @@ func (s *Spoiler) Run() {
 func (s *Spoiler) Stop() {
 	if s.stop != nil {
 		s.stop <- true
-		s.stop = nil
 	}
 }
 
@@ -42,10 +41,12 @@ func (s *Spoiler) spoil() {
 			for {
 				select {
 				case <-s.stop:
+					s.stop = nil
 					return
 				default:
 				}
 			}
 		}()
 	}
+
 }
