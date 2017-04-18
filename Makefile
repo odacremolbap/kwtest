@@ -2,15 +2,18 @@ export GO15VENDOREXPERIMENT:=1
 export CGO_ENABLED:=0
 export GOARCH:=amd64
 
+
 LOCAL_OS:=$(shell uname | tr A-Z a-z)
 GOFILES:=$(shell find . -name '*.go' | grep -v -E '(./vendor)')
 GOPATH_BIN:=$(shell echo ${GOPATH} | awk 'BEGIN { FS = ":" }; { print $1 }')/bin
 GO_PACKAGE := github.com/odacremolbap/kwtest
+VERSION := $(shell cat VERSION)
 LDFLAG_VER := -X $(GO_PACKAGE)/model.version=$(VERSION)
 LDFLAG_DATE := -X $(GO_PACKAGE)/model.date=$(DATE)
 LDFLAG_GIT := -X $(GO_PACKAGE)/model.gitVersion=$(GIT_VERSION)
 LDFLAG_STATIC :=-extldflags "-static"
 LDFLAGS=$(LDFLAG_VER) $(LDFLAG_DATE) $(LDFLAG_GIT) $(LDFLAG_STATIC)
+IMAGE_REPO=pmercado/kwtest
 
 all: \
 	_output/bin/linux/kwtest \
@@ -33,8 +36,16 @@ _output/bin/%: $(GOFILES)
 	mkdir -p $(dir $@)
 	GOOS=$(word 1, $(subst /, ,$*)) go build $(GOFLAGS) -ldflags '$(LDFLAGS)' -o $@ github.com/odacremolbap/kwtest/cmd/
 
-
 clean:
 	rm -rf _output
 
-.PHONY: all check clean release
+image: release
+	mkdir -p ./image/bin/
+	cp ./_output/bin/linux/kwtest ./image/bin/kwtest
+	docker build -t ${IMAGE_REPO}:${VERSION} -f ./image/Dockerfile ./image/
+	rm -rf ./image/bin/
+
+push: image
+	docker push pmercado/kwtest
+
+.PHONY: all check clean release build_image push_image
