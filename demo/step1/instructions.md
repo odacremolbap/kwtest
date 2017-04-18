@@ -1,4 +1,4 @@
-- Import the compose file
+- Import the compose file in this folder
 - Review manifest
 - Add resource limits
 look for `resources: {}` and replace with
