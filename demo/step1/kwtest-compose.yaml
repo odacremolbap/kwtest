@@ -1,0 +1,7 @@
+version: '2'
+services:
+ kwtest:
+  image: pmercado/kwtest:0.1.0
+  container_name: kwtest
+  ports:
+   - "80:80"
