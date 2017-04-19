@@ -5,7 +5,7 @@ look for `resources: {}` and replace with
 ```
 resources:
   limits:
-    cpu: "200m"
+    cpu: '200m'
 ```  
 
 
@@ -36,7 +36,7 @@ items:
             protocol: TCP
           resources:
             limits:
-              cpu: "200m"
+              cpu: '200m'
         restartPolicy: Always
   status: {}
 - apiVersion: v1
